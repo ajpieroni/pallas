@@ -6,6 +6,8 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/app/contexts/UserContext';
+import { PrismaClient } from '@prisma/client';
+
 
 interface SignInFormData {
     email: string;
@@ -13,6 +15,8 @@ interface SignInFormData {
 }
 
 export default function SignIn() {
+const prisma = new PrismaClient();
+
     const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const router = useRouter();
