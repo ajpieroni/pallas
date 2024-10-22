@@ -5,7 +5,7 @@ import { useTheme } from "../contexts/ThemeContext";
 const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   return (
-    <header className="flex items-center p-4 bg-white shadow-md">
+    <header className="flex items-center p-4 bg-white shadow-md z-10">
       <OwlIcon className="h-8 w-8 animate-pulse" />{" "}
       {/* Add animation or styling */}
       <h1 className="ml-2 text-2xl font-serif text-black">Pallas</h1>

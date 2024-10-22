@@ -1,8 +1,11 @@
-"use client"; // Ensure this is at the top
+// src/app/auth/signin/page.tsx
+
+"use client";
 
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Ensure you're using the correct import
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/app/contexts/UserContext';
 
 interface SignInFormData {
     email: string;
@@ -12,41 +15,39 @@ interface SignInFormData {
 export default function SignIn() {
     const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const router = useRouter(); // Create an instance of the router
+    const router = useRouter();
+    const { setUserId, setUserData } = useUser();
 
     const onSubmit = async (data: SignInFormData) => {
-        setLoading(true); // Set loading to true
-        try {
-            const response = await fetch('/api/auth/signin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Sign-in failed'); // Use server's error message
-            }
-
-            const result = await response.json();
-            console.log('User signed in successfully:', result);
-
-            // Redirect to the dashboard after successful sign-in
-            router.push('/dashboard'); // Redirect here
-          } catch (error) {
-            // Check if the error is an instance of Error
-            if (error instanceof Error) {
-                setErrorMessage(error.message || "Sign-in failed. Please try again.");
-            } else {
-                setErrorMessage("Sign-in failed. Please try again."); // Fallback message for unknown errors
-            }
-        } finally {
-            setLoading(false); // Reset loading state
-        }
-    };
+      try {
+          const response = await fetch('/api/auth/signin', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+          });
+  
+          if (!response.ok) {
+              throw new Error('Sign-in failed');
+          }
+  
+          const result = await response.json();
+          console.log('User signed in successfully:', result);
+  
+          // Assuming the response contains user ID and data
+          setUserId(result.user.id); // Store user ID in context
+          setUserData(result.user); // Store user data in context
+  
+          // Log user ID to check if it was set correctly
+          console.log('User ID set in context:', result.user.id);
+          
+          // Redirect to the dashboard after successful sign-in
+          router.push('/dashboard');
+      } catch (error) {
+          setErrorMessage("Sign-in failed. Please try again.");
+      }
+  };
 
     return (
         <div className="flex justify-center items-center h-screen text-black">
@@ -79,10 +80,9 @@ export default function SignIn() {
 
                 <button
                     type="submit"
-                    disabled={loading} // Disable button while loading
-                    className="w-full bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
+                    className="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
                 >
-                    {loading ? 'Signing In...' : 'Sign In'} {/* Show loading text */}
+                    Sign In
                 </button>
             </form>
         </div>

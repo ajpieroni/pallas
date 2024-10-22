@@ -1,8 +1,29 @@
-// src/components/OwlIcon.tsx
+"use client"; // Ensure this is at the top
 
-import React from 'react';
+import React, { useContext } from 'react';
+import { useRouter } from 'next/navigation';
+import { UserContext } from '../contexts/UserContext'; // Import UserContext
 
 const OwlIcon = (props: React.SVGProps<SVGSVGElement>) => {
+  const router = useRouter();
+  const userContext = useContext(UserContext); // Get the context
+
+  // Check if the context is defined
+  if (!userContext) {
+    throw new Error('UserContext is not available. Ensure you are within a UserProvider.');
+  }
+
+  const { setUserId, setUserData } = userContext; // Destructure after confirming context is defined
+
+  const handleSignOut = () => {
+    if (window.confirm("Goodbye! Are you sure you want to sign out?")) {
+      // Clear user context or session
+      setUserId(null); 
+      setUserData(null);
+      router.push('/auth/signin'); // Redirect to the sign-in page
+    }
+  };
+
   return (
     <svg
       fill="#000000"
@@ -15,6 +36,8 @@ const OwlIcon = (props: React.SVGProps<SVGSVGElement>) => {
       viewBox="0 0 512 512"
       xmlSpace="preserve"
       {...props} // Allows passing additional props like className
+      onClick={handleSignOut} // Trigger sign out on click
+      style={{ cursor: 'pointer' }} // Change cursor to pointer for better UX
     >
       <g>
         <g>
