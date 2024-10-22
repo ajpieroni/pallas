@@ -18,9 +18,28 @@ export default function SignUp() {
       setErrorMessage("Passwords do not match");
       return;
     }
-
-    // Handle the sign-up logic here
-    console.log(data);
+  
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Sign-up failed');
+      }
+  
+      const result = await response.json();
+      console.log('User signed up successfully:', result);
+    } catch (error) {
+      setErrorMessage("Sign-up failed. Please try again.");
+    }
   };
 
   return (
