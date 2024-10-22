@@ -12,9 +12,11 @@ interface SignInFormData {
 export default function SignIn() {
     const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter(); // Create an instance of the router
 
     const onSubmit = async (data: SignInFormData) => {
+        setLoading(true); // Set loading to true
         try {
             const response = await fetch('/api/auth/signin', {
                 method: 'POST',
@@ -25,7 +27,8 @@ export default function SignIn() {
             });
 
             if (!response.ok) {
-                throw new Error('Sign-in failed');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Sign-in failed'); // Use server's error message
             }
 
             const result = await response.json();
@@ -33,8 +36,15 @@ export default function SignIn() {
 
             // Redirect to the dashboard after successful sign-in
             router.push('/dashboard'); // Redirect here
-        } catch (error) {
-            setErrorMessage("Sign-in failed. Please try again.");
+          } catch (error) {
+            // Check if the error is an instance of Error
+            if (error instanceof Error) {
+                setErrorMessage(error.message || "Sign-in failed. Please try again.");
+            } else {
+                setErrorMessage("Sign-in failed. Please try again."); // Fallback message for unknown errors
+            }
+        } finally {
+            setLoading(false); // Reset loading state
         }
     };
 
@@ -69,9 +79,10 @@ export default function SignIn() {
 
                 <button
                     type="submit"
+                    disabled={loading} // Disable button while loading
                     className="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
                 >
-                    Sign In
+                    {loading ? 'Signing In...' : 'Sign In'} {/* Show loading text */}
                 </button>
             </form>
         </div>
