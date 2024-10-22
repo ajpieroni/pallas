@@ -1,6 +1,27 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    font-family: 'Merriweather', serif; /* Apply the font to the body */
+}
+
+body {
+  font-family: 'Merriweather', serif; /* or your preferred serif font */
+}
+
+* {
+  font-family: 'Merriweather', serif; /* This applies to all elements */
+}
+
+/* Optional: To ensure consistency across headings, paragraphs, etc. */
+h1, h2, h3, h4, h5, h6, p, li, span {
+  font-family: 'Merriweather', serif; /* Apply serif to specific elements if needed */
+}
 
 :root {
   --background: #ffffff;
@@ -19,3 +40,40 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* !Owl */
+/* src/app/globals.css or src/components/Header.css */
+
+.owl-icon {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* !Light and Dark Mode */
+/* src/globals.css */
+
+/* Light mode styles */
+body {
+  background-color: white;
+  color: black;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode styles */
+body.dark {
+  background-color: #121212; /* Dark background */
+  color: white; /* Light text */
+}
+
+/* Add styles for other elements as needed */
