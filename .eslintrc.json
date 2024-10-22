@@ -1,8 +1,7 @@
 {
   "extends": ["next", "next/core-web-vitals"],
   "rules": {
-      "no-explicit-any": "off",
-      "no-console": "warn"
-      // Add more rules as needed
+      "no-console": "off" // Disable the no-console rule
+      // other rules...
   }
 }
