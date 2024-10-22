@@ -4,10 +4,11 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 // Define the type for the UserContext
 interface UserContextType {
     userId: string | null;
-    userData: string; // Adjust the type according to your user data structure
+    userData: any | null; // Allow userData to be null
     setUserId: (id: string | null) => void;
-    setUserData: (data: string) => void;
+    setUserData: (data: any | null) => void; // Allow setUserData to accept null
 }
+
 
 // Create the context with an undefined initial value
 const UserContext = createContext<UserContextType | undefined>(undefined);
