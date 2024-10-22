@@ -44,9 +44,9 @@ export default function SignIn() {
           
           // Redirect to the dashboard after successful sign-in
           router.push('/dashboard');
-      } catch (error) {
+        } catch {
           setErrorMessage("Sign-in failed. Please try again.");
-      }
+        }
   };
 
     return (

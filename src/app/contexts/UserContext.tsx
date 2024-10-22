@@ -4,9 +4,9 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 // Define the type for the UserContext
 interface UserContextType {
     userId: string | null;
-    userData: any; // Adjust the type according to your user data structure
+    userData: string; // Adjust the type according to your user data structure
     setUserId: (id: string | null) => void;
-    setUserData: (data: any) => void;
+    setUserData: (data: string) => void;
 }
 
 // Create the context with an undefined initial value
@@ -15,7 +15,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 // UserProvider component that will provide the context value
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [userId, setUserId] = useState<string | null>(null);
-    const [userData, setUserData] = useState<any>(null);
+    const [userData, setUserData] = useState<string>(''); // Fix: Change null to ''
 
     return (
         <UserContext.Provider value={{ userId, setUserId, userData, setUserData }}>
