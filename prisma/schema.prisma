@@ -22,17 +22,18 @@ model User {
   password          String
   googleAccessToken String?
   googleRefreshToken String?
-  tasks             Task[]
+  tasks             Task[]   @relation("UserTasks")
 }
 
 model Task {
   id          Int      @id @default(autoincrement())
   title       String
-  effort      String   // 'low', 'medium', 'high'
-  scheduled   Boolean  @default(false)
-  scheduledAt DateTime?
-  user        User     @relation(fields: [userId], references: [id])
+  status      String   // e.g., 'pending', 'completed'
+  priority    String   // e.g., 'low', 'medium', 'high'
+  effort      String   // e.g., 'low', 'medium', 'high'
+  dueDate     DateTime? // Due date for the task
+  user        User     @relation("UserTasks", fields: [userId], references: [id])
   userId      Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}        
+}

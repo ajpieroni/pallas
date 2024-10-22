@@ -80,7 +80,7 @@ export default function SignIn() {
                 <button
                     type="submit"
                     disabled={loading} // Disable button while loading
-                    className="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+                    className="w-full bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
                 >
                     {loading ? 'Signing In...' : 'Sign In'} {/* Show loading text */}
                 </button>

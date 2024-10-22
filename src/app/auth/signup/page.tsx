@@ -2,6 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface SignUpFormData {
   email: string;
@@ -10,8 +11,9 @@ interface SignUpFormData {
 }
 
 export default function SignUp() {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<SignUpFormData>();
+  const { register, handleSubmit, formState: { errors } } = useForm<SignUpFormData>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   const onSubmit = async (data: SignUpFormData) => {
     if (data.password !== data.confirmPassword) {
@@ -37,9 +39,11 @@ export default function SignUp() {
   
       const result = await response.json();
       console.log('User signed up successfully:', result);
-    } catch (error) {
+      // direct them to onboarding
+      router.push('/onboarding');
+    } catch {
       setErrorMessage("Sign-up failed. Please try again.");
-    }
+  }
   };
 
   return (
@@ -84,7 +88,7 @@ export default function SignUp() {
 
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+          className="w-full bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
         >
           Sign Up
         </button>
