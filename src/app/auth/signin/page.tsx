@@ -15,7 +15,7 @@ interface SignInFormData {
 }
 
 export default function SignIn() {
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
     const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
