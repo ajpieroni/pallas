@@ -1,38 +1,55 @@
-// src/app/api/tasks/route.ts
+// src/app/api/auth/tasks/route.ts
+
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Handle GET request to fetch tasks for a specific user
 export async function GET(req: Request) {
-  const userId = req.headers.get('user-id'); // Extract user ID from headers or auth context
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
 
-  const tasks = await prisma.task.findMany({
-    where: { userId: parseInt(userId) }, // Only fetch tasks for the logged-in user
-  });
-  
-  return NextResponse.json(tasks);
+    if (!userId) {
+        return NextResponse.json({ message: 'User ID is required' }, { status: 400 });
+    }
+
+    try {
+        const tasks = await prisma.task.findMany({
+            where: { userId: parseInt(userId, 10) }, // Ensure userId is an integer
+        });
+        return NextResponse.json(tasks);
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+        return NextResponse.json({ message: 'Failed to fetch tasks' }, { status: 500 });
+    }
 }
 
-export async function POST(req: Request) {
-  const body = await req.json();
-  const { title, status, priority, effort, dueDate, userId } = body;
+// Handle POST request to add a new task
 
-  const task = await prisma.task.create({
-    data: {
-      title,
-      status,
-      priority,
-      effort,
-      dueDate,
-      userId,
-    },
-  });
+export async function POST(request: Request) {
+    const { title, status, priority, userId, effort } = await request.json();
 
-  return NextResponse.json(task);
+    // Log the incoming data
+    console.log('Incoming data:', { title, status, priority, userId, effort });
+
+    if (!title || !userId || !effort) {
+        return NextResponse.json({ error: 'Title, User ID, and Effort are required' }, { status: 400 });
+    }
+
+    try {
+        const newTask = await prisma.task.create({
+            data: {
+                title,
+                status,
+                priority,
+                userId,
+                effort,
+            },
+        });
+        return NextResponse.json(newTask, { status: 201 });
+    } catch (error) {
+        console.error("Error adding task:", error);
+        return NextResponse.json({ error: 'Failed to add task' }, { status: 500 });
+    }
 }
-
-// Add other methods (PUT, DELETE) as needed...
