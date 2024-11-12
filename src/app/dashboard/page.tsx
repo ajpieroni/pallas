@@ -17,12 +17,12 @@ interface Task {
 
 export default function Dashboard() {
     const { isDarkMode } = useTheme();
-    const { userId } = useUser();
+    const { userId } = useUser(); // Get userId from context
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
     const [newTaskTitle, setNewTaskTitle] = useState('');
-    const [newTaskStatus, setNewTaskStatus] = useState('Pending');
-    const [newTaskPriority, setNewTaskPriority] = useState('Medium');
+    const [newTaskStatus, setNewTaskStatus] = useState('Pending'); // Default status
+    const [newTaskPriority, setNewTaskPriority] = useState('Medium'); // Default priority
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -56,16 +56,18 @@ export default function Dashboard() {
 
     const handleAddTask = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
+        
         const taskData = {
             title: newTaskTitle,
             status: newTaskStatus,
             priority: newTaskPriority,
-            userId,
-            effort: 'Medium',
-            dueDate: undefined,
+            userId: userId || "", // Ensure userId is a string
+            effort: 'Medium', // Change this based on your logic
+            dueDate: undefined, // Adjust as needed
         };
-
+    
+        console.log('Adding task:', taskData);
+    
         try {
             const response = await fetch('/api/auth/tasks', {
                 method: 'POST',
@@ -74,55 +76,21 @@ export default function Dashboard() {
                 },
                 body: JSON.stringify(taskData),
             });
-
+    
             if (!response.ok) {
                 throw new Error('Failed to add task');
             }
-
+    
             const newTask = await response.json();
             setTasks([...tasks, newTask]);
+    
+            console.log('Task added successfully:', newTask);
+            // Reset input fields
             setNewTaskTitle('');
             setNewTaskStatus('Pending');
             setNewTaskPriority('Medium');
         } catch (error) {
             console.error('Error adding task:', error);
-        }
-    };
-
-    const handleUpdateTask = async (id: number, updatedTask: Partial<Task>) => {
-        try {
-            const response = await fetch(`/api/auth/tasks/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedTask),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update task');
-            }
-
-            const updatedTasks = tasks.map(task => (task.id === id ? { ...task, ...updatedTask } : task));
-            setTasks(updatedTasks);
-        } catch (error) {
-            console.error('Error updating task:', error);
-        }
-    };
-
-    const handleDeleteTask = async (id: number) => {
-        try {
-            const response = await fetch(`/api/auth/tasks/${id}`, {
-                method: 'DELETE',
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete task');
-            }
-
-            setTasks(tasks.filter(task => task.id !== id));
-        } catch (error) {
-            console.error('Error deleting task:', error);
         }
     };
 
@@ -180,59 +148,21 @@ export default function Dashboard() {
                             </button>
                         </form>
 
-                        {/* Tasks section as a table */}
+                        {/* Tasks section */}
                         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
                             <h2 className="text-2xl font-semibold mb-4 text-black">Your Tasks</h2>
                             {tasks.length > 0 ? (
-                                <table className="min-w-full">
-                                    <thead>
-                                        <tr>
-                                            <th className="py-2 text-left">Title</th>
-                                            <th className="py-2 text-left">Status</th>
-                                            <th className="py-2 text-left">Priority</th>
-                                            <th className="py-2 text-left">Effort</th>
-                                            <th className="py-2 text-left">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {tasks.map(task => (
-                                            <tr key={task.id}>
-                                                <td className="border-b py-2">{task.title}</td>
-                                                <td className="border-b py-2">
-                                                    <select
-                                                        value={task.status}
-                                                        onChange={(e) => handleUpdateTask(task.id, { status: e.target.value })}
-                                                        className="border border-gray-300 rounded-md p-1"
-                                                    >
-                                                        <option value="Pending">Pending</option>
-                                                        <option value="In Progress">In Progress</option>
-                                                        <option value="Completed">Completed</option>
-                                                    </select>
-                                                </td>
-                                                <td className="border-b py-2">
-                                                    <select
-                                                        value={task.priority}
-                                                        onChange={(e) => handleUpdateTask(task.id, { priority: e.target.value })}
-                                                        className="border border-gray-300 rounded-md p-1"
-                                                    >
-                                                        <option value="Low">Low</option>
-                                                        <option value="Medium">Medium</option>
-                                                        <option value="High">High</option>
-                                                    </select>
-                                                </td>
-                                                <td className="border-b py-2">{task.effort}</td>
-                                                <td className="border-b py-2">
-                                                    <button
-                                                        onClick={() => handleDeleteTask(task.id)}
-                                                        className="text-red-500 hover:underline"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                <ul className="list-disc pl-5">
+                                    {tasks.map(task => (
+                                        <li key={task.id} className="text-gray-700 mb-2">
+                                            <h3 className="font-bold">{task.title}</h3>
+                                            <p>Status: {task.status}</p>
+                                            <p>Priority: {task.priority}</p>
+                                            <p>Effort: {task.effort}</p>
+                                            <p>Due Date: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</p>
+                                        </li>
+                                    ))}
+                                </ul>
                             ) : (
                                 <p>No tasks available.</p>
                             )}
@@ -242,3 +172,10 @@ export default function Dashboard() {
                         <div className="bg-white shadow-lg rounded-lg p-6">
                             <h2 className="text-2xl font-semibold mb-4 text-black">Recent Activities</h2>
                             <p className="text-gray-700">No recent activities to display.</p>
+                        </div>
+                    </>
+                )}
+            </div>
+        </Layout>
+    );
+}
