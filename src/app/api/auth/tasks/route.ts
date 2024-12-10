@@ -53,3 +53,25 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to add task' }, { status: 500 });
     }
 }
+
+// Handle DELETE request to delete a task
+export async function DELETE(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const taskId = searchParams.get('taskId');
+
+    if (!taskId) {
+        return NextResponse.json({ message: 'Task ID is required' }, { status: 400 });
+    }
+
+    try {
+        // Delete the task from the database (example uses Prisma)
+        const deletedTask = await prisma.task.delete({
+            where: { id: parseInt(taskId, 10) }, // Ensure taskId is an integer
+        });
+
+        return NextResponse.json(deletedTask, { status: 200 });
+    } catch (error) {
+        console.error('Error deleting task:', error);
+        return NextResponse.json({ message: 'Failed to delete task' }, { status: 500 });
+    }
+}
